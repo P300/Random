@@ -1,0 +1,40 @@
+clear;
+clc;
+
+%Reading in the data as a cell array%
+fileID = fopen('sample.log', 'r');
+
+Header = string(fgetl(fileID));
+Data = textscan(fileID,'%s %d %s %s');
+
+fclose(fileID);
+
+%Splitting the data into specific columns%
+Category = Data(:,1);
+Category = string(Category{1,1});
+Segment_Number = Data(:,2); 
+Segment_Number = string(Segment_Number{1,1});
+Segment_Good = Data(:,3);
+Segment_Good = string(Segment_Good{1,1});
+Eye_Movements = Data(:,4);
+Eye_Movements = string(Eye_Movements{1,1});
+
+
+%Finding the indices corresponding to "go" and "nogo"%
+No_Go_Indices = contains(Category,"nogo");
+Go_Indices = ~No_Go_Indices;
+
+%Finding how many true cases in column 3 (Segment_Good) corresponding to "go" and "nogo"
+Go_True_Cases = nnz(contains(Segment_Good(Go_Indices),"true"));
+No_Go_True_Cases = nnz(contains(Segment_Good(No_Go_Indices),"true"));
+
+
+%Counting the number of times true occurs in each column%
+Column_3_True_Count = nnz(contains(Segment_Good,"true"));
+Column_4_True_Count = nnz(contains(Eye_Movements,"true"));
+
+%Printing the results to the command window%
+fprintf("Category: go -> %d true\n",Go_True_Cases);
+fprintf("Category: nogo -> %d true\n\n",No_Go_True_Cases);
+
+fprintf("Total true cases: %d\n", Column_3_True_Count);
